@@ -1,7 +1,8 @@
 #!/usr/bin/env npx ts-node
 
 import { getVersion } from "./getVersion"
-import { Extractor } from './extractor'
+import { extract } from './extractor';
+import * as fs from "fs";
 /**
  *  return the arguments of the command except node and index.ts
  */
@@ -24,7 +25,7 @@ const printCommandHelp = () => {
         
         Example:
         
-        $ apim-policy-transformer combine ./example.cs ./example.xml ./output/location
+        $ apim-policy-transformer extract path/to/policyDir
   
         `
     console.log(help)
@@ -40,12 +41,23 @@ if (paths.length <= 1) {
 
 // Call extractor
 if (paths[0] === 'extract') {
-    const policyPath = paths[1]
-    const resultLocation = paths[2]
-    Extractor(policyPath, resultLocation)
+    let policyDir = paths[1]
+    policyDir = policyDir.endsWith('/')? policyDir : `${policyDir}/`
+    console.log(policyDir)
+    // Read all files in the directory
+    fs.readdir(policyDir, (err, files) => {
+
+        // Handle errors
+        if (err) {
+            console.log(`Error reading directory: ${err}`);
+            return;
+        }
+
+        // Process each file
+        files.forEach((file) => {
+            if (file.endsWith(".xml") === true) {
+                extract(policyDir, file);
+            }
+        });
+    });
 }
-// Call the combiner for path and display the result on the console
-// paths.forEach((path) => {
-//     console.log(`${path}`)
-//     console.log(`hi`)
-// })

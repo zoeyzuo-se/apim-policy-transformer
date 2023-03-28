@@ -1,46 +1,79 @@
-import * as fs from 'fs';
+import * as fs from "fs";
 
-export function Extractor(xmlFilePath: string, resultLocation: string): void {
-  const bracePattern = /@{((?:[^{}]|{(?:[^{}]|{(?:[^{}]|{[^{}]*})*})*})*)}/g;
-  const bracketPattern = /@\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
-  let xmlContent = fs.readFileSync(xmlFilePath, 'utf-8');
-  const braceMatches = xmlContent.match(bracePattern) || [];
-  const bracketMatches = xmlContent.match(bracketPattern) || [];
-  const methods: Record<string, string> = {};
+// Define RegEx patterns
+const bracePattern = /@{((?:[^{}]|{(?:[^{}]|{(?:[^{}]|{[^{}]*})*})*})*)}/g;
+const bracketPattern = /@\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
 
-  for (let i = 0; i < braceMatches.length; i++) {
-    const match = braceMatches[i];
-    const methodName = `Method${i + 1}`;
-    methods[methodName] = match;
-    xmlContent = xmlContent.replace(match, `@${methodName}`);
-  }
+export const extract = (directoryPath: string, filename: string) => {
+	// Read the policy file
+	let xmlFile = fs.readFileSync(`${directoryPath}${filename}`, "utf8");
 
-  for (let i = 0; i < bracketMatches.length; i++) {
-    const match = bracketMatches[i];
-    const methodName = `Method${braceMatches.length + i + 1}`;
-    methods[methodName] = match;
-    xmlContent = xmlContent.replace(match, `@${methodName}`);
-  }
+	// Find all the C# expressions in the policy file as blocks
+	const braceMatches = Array.from(xmlFile.matchAll(bracePattern), (m) => m[1] || m[2]);
 
-  const csContent = Object.entries(methods)
-    .map(([methodName, methodContent]) => {
-        const content = removeSurroundingBrackets(methodContent);
-        return `static string ${methodName}() {\n  ${content}\n}`;
-    })
-    .join('\n\n');
+	// Find all the C# expressions in the policy file as inline expressions
+	const bracketMatches = xmlFile.match(bracketPattern)?.map((m) => m.slice(2, -1)) || [];
 
-  const replacedXmlFilePath = `${resultLocation}/replaced.xml`;
-  const csFilePath = `${resultLocation}/mappedMethods.cs`;
-  fs.writeFileSync(replacedXmlFilePath, xmlContent);
-  fs.writeFileSync(csFilePath, csContent);
-}
+	// Read the template file
+	const template = fs.readFileSync(`${process.cwd()}/src/templates/script.csx`, "utf8");
 
-function removeSurroundingBrackets(str: string): string {
-    if (str.startsWith("@{") && str.endsWith("}")) {
-        return str.slice(2, -1);
-      }
-      if (str.startsWith("@(") && str.endsWith(")")) {
-        return str.slice(2, -1);
-      }
-      return str;
-}
+	// Define the output directory name
+	const outputDirectory = filename.replace(".xml", "");
+
+	// Create the output directory
+	fs.mkdir(`${directoryPath}/scripts/${outputDirectory}`, { recursive: true }, (err) => {
+		if (err) {
+			console.error(err);
+			return;
+		}
+	});
+	
+	// Copy the context class into the output directory
+	fs.copyFile(`${process.cwd()}/src/templates/_context.csx`, `${directoryPath}/scripts/${outputDirectory}/_context.csx`, (err) => {
+		if (err) {
+			console.error(err);
+			return;
+		}
+	});
+
+	// Write the snippets out as C# scripts
+	braceMatches.forEach((match, index) => {
+		let name = `block-${(index + 1).toString().padStart(3, "0")}`
+		xmlFile = xmlFile.replace(match, `${name}`);
+		fs.writeFile(
+			`${directoryPath}/scripts/${outputDirectory}/${name}.csx`,
+			template.replace("return \"{0}\";", match),
+			(err) => {
+				if (err) {
+					console.error(err);
+				}
+			}
+		);
+	});
+
+	// Write the snippets out as C# scripts
+	bracketMatches.forEach((match, index) => {
+		let name = `inline-${(index + 1).toString().padStart(3, "0")}`
+		xmlFile = xmlFile.replace(match, `${name}`);
+		fs.writeFile(
+			`${directoryPath}/scripts/${outputDirectory}/${name}.csx`,
+			template.replace("\"{0}\"", match),
+			(err) => {
+				if (err) {
+					console.error(err);
+				}
+			}
+		);
+	});
+
+	// Create a new xml file
+	  fs.writeFile(
+		`${directoryPath}/scripts/${outputDirectory}/${filename}`,
+		xmlFile,
+		(err) => {
+		if (err) {
+			console.error(err);
+		}
+    }
+  );
+};
