@@ -8,22 +8,23 @@ export async function combine (directoryPath: string) {
     // console.log(`currently at ${directoryPath}`)
     const filenames = await getFilenamesInDirectory(directoryPath);
 
-    // Compute the xml filename and read its content
+    // Compute the xml filename for storing the result
     const dirArray = directoryPath.split('/')
     const xmlFilename = `${dirArray[dirArray.length-1]}.xml`
-    let xmlFileContent = fs.readFileSync(`${directoryPath}/${xmlFilename}`, 'utf8');
-    console.log('xml file in directory:', xmlFilename);
+
+    // Read xmlContent from the generated xmlfile
+    let xmlFileContent = fs.readFileSync(`${directoryPath}/replaced.xml`, 'utf8');
 
     // Get code outside of block-xxx.csx file and inline-xxx.csx file
     filenames.forEach(file => {
         if((file.startsWith('inline') ||file.startsWith('block')) && file.endsWith('.csx')) {
             let codeSnippet = getCodeInMethod(`${directoryPath}/${file}`, 'Snippet')
-            codeSnippet = removeSurroundingBrackets(codeSnippet);
+            codeSnippet = removeSurroundingChars(codeSnippet);
             const xmlPlaceholder = file.slice(0, -4);
             xmlFileContent = replaceAll(xmlFileContent, xmlPlaceholder, codeSnippet)
         }
         // Write the combined XML to a file
-        fs.writeFileSync(`${directoryPath}/result.xml`, xmlFileContent);
+        fs.writeFileSync(`${directoryPath}/${xmlFilename}`, xmlFileContent);
     });
     
 }
@@ -93,9 +94,9 @@ function getCodeInMethod(csxFilePath: string, methodName: string): string | null
     return xml;
   }
 
-  function removeSurroundingBrackets(str: string): string {
+  function removeSurroundingChars(str: string): string {
     if (str.startsWith('{') && str.endsWith('}')) {
-        return str.slice(1, -1);
-      }
-      return str; 
+        str = str.slice(1, -1);
+    }
+      return str.trim(); 
   }

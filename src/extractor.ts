@@ -21,12 +21,7 @@ export const extract = (directoryPath: string, filename: string) => {
 	const outputDirectory = filename.replace(".xml", "");
 
 	// Create the output directory
-	fs.mkdir(`${directoryPath}/scripts/${outputDirectory}`, { recursive: true }, (err) => {
-		if (err) {
-			console.error(err);
-			return;
-		}
-	});
+	fs.mkdirSync(`${directoryPath}/scripts/${outputDirectory}`, { recursive: true });
 	
 	// Copy the context class into the output directory
 	fs.copyFile(`${process.cwd()}/src/templates/_context.csx`, `${directoryPath}/scripts/${outputDirectory}/_context.csx`, (err) => {
@@ -68,7 +63,7 @@ export const extract = (directoryPath: string, filename: string) => {
 
 	// Create a new xml file
 	  fs.writeFile(
-		`${directoryPath}/scripts/${outputDirectory}/${filename}`,
+		`${directoryPath}/scripts/${outputDirectory}/replaced.xml`,
 		xmlFile,
 		(err) => {
 		if (err) {

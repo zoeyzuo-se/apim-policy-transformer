@@ -10,6 +10,7 @@ import * as fs from "fs";
 const getArgs = () => {
     // We retrieve all the command argumnts except the first 3
     const args = process.argv.slice(2)
+    // const args= ["combine","/Users/zoeyzuo/Documents/work/LSEG/extension-dev/apim-policy-transformer/policies/scripts"]
     return args
 }
 
@@ -19,6 +20,7 @@ const getArgs = () => {
  */
 const printCommandHelp = () => {
     const version = getVersion()
+    console.log(paths)
     const help = `
         apim-policy-transformer (version: ${version})
         
@@ -43,7 +45,7 @@ if (paths.length <= 1) {
 // Call extractor
 if (paths[0] === 'extract') {
     let policyDir = paths[1]
-    policyDir = policyDir.endsWith('/')? policyDir.slice(0, -1) : policyDir
+    policyDir = policyDir.endsWith('/')? policyDir.replace(/\/$/, "") : policyDir
     // Read all files in the directory
     fs.readdir(policyDir, (err, files) => {
         // Handle errors
