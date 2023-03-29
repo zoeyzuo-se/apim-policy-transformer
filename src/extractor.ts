@@ -6,7 +6,7 @@ const bracketPattern = /@\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
 
 export const extract = (directoryPath: string, filename: string) => {
 	// Read the policy file
-	let xmlFile = fs.readFileSync(`${directoryPath}${filename}`, "utf8");
+	let xmlFile = fs.readFileSync(`${directoryPath}/${filename}`, "utf8");
 
 	// Find all the C# expressions in the policy file as blocks
 	const braceMatches = Array.from(xmlFile.matchAll(bracePattern), (m) => m[1] || m[2]);
