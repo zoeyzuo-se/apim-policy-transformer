@@ -1,4 +1,6 @@
 # apim-policy-transformer CLI Readme
+:boom: Please note that this package is still under development. :)
+
 The apim-policy-transformer CLI tool is designed to extract C# code snippets from Azure APIM policy XML files. It can also combine them back into the policy XML file (TODO).
 
 This extractor is based on Ira Rainey's work: [apim-script-extractor](https://github.com/irarainey/apim-script-extractor)
