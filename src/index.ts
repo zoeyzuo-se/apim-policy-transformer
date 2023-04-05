@@ -1,19 +1,16 @@
 #!/usr/bin/env npx ts-node
 
 import { getVersion } from "./getVersion"
-import { extract } from './extractor';
-import { combine } from './combiner';
-import * as fs from "fs";
+import { extractFromDirectory } from './extractor';
+import { combineFromDirectory } from './combiner';
 /**
  *  return the arguments of the command except node and index.ts
  */
 const getArgs = () => {
     // We retrieve all the command argumnts except the first 3
     const args = process.argv.slice(2)
-    // const args= ["combine","/Users/zoeyzuo/Documents/work/LSEG/extension-dev/apim-policy-transformer/policies/scripts"]
     return args
 }
-
 
 /**
  * Command Help
@@ -44,39 +41,18 @@ if (paths.length <= 1) {
 
 // Call extractor
 if (paths[0] === 'extract') {
-    let policyDir = paths[1]
-    policyDir = policyDir.endsWith('/')? policyDir.replace(/\/$/, "") : policyDir
-    // Read all files in the directory
-    fs.readdir(policyDir, (err, files) => {
-        // Handle errors
-        if (err) {
-            console.log(`Error reading directory: ${err}`);
-            return;
-        }
-        // Process each file
-        files.forEach((file) => {
-            if (file.endsWith(".xml") === true) {
-                extract(policyDir, file);
-            }
-        });
-    });
+    extractFromDirectory(paths[1]);
 }
 
 // Call Combiner
 if (paths[0] === 'combine') {
-    let scriptsDir = paths[1]
-    scriptsDir = scriptsDir.endsWith('/') ? scriptsDir.slice(0, -1) : scriptsDir
-
-    // Read subdir names to an array
-    const subdirs = fs
-        .readdirSync(scriptsDir, { withFileTypes: true })
-        .filter((dirent) => dirent.isDirectory())
-        .map((dirent) => dirent.name);
-
-    // Iterate thru subdirs
-    subdirs.forEach((subdir) => {
-        const subdirPath = `${scriptsDir}/${subdir}`;
-        combine(subdirPath);
-    });
-
+    combineFromDirectory(paths[1]);
 }
+
+exports.extractor = function(directoryPath: string) {
+    extractFromDirectory(directoryPath);
+}
+
+exports.combiner = function(directoryPath: string) {
+    combineFromDirectory(directoryPath);
+};

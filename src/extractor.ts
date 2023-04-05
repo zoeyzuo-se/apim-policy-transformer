@@ -1,10 +1,12 @@
 import * as fs from "fs";
+import path = require("path");
+
 
 // Define RegEx patterns
 const bracePattern = /@{((?:[^{}]|{(?:[^{}]|{(?:[^{}]|{[^{}]*})*})*})*)}/g;
 const bracketPattern = /@\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
 
-export const extract = (directoryPath: string, filename: string) => {
+const extract = (directoryPath: string, filename: string) => {
 	// Read the policy file
 	let xmlFile = fs.readFileSync(`${directoryPath}/${filename}`, "utf8");
 
@@ -15,8 +17,9 @@ export const extract = (directoryPath: string, filename: string) => {
 	const bracketMatches = xmlFile.match(bracketPattern)?.map((m) => m.slice(2, -1)) || [];
 
 	// Read the template file
-	const template = fs.readFileSync(`${process.cwd()}/src/templates/script.csx`, "utf8");
-
+	// const template = fs.readFileSync(`${process.cwd()}/src/templates/script.csx`, "utf8");
+	// const template = fs.readFileSync(`./templates/script.csx`, "utf8");
+	const template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
 	// Define the output directory name
 	const outputDirectory = filename.replace(".xml", "");
 
@@ -24,7 +27,7 @@ export const extract = (directoryPath: string, filename: string) => {
 	fs.mkdirSync(`${directoryPath}/scripts/${outputDirectory}`, { recursive: true });
 	
 	// Copy the context class into the output directory
-	fs.copyFile(`${process.cwd()}/src/templates/_context.csx`, `${directoryPath}/scripts/${outputDirectory}/_context.csx`, (err) => {
+	fs.copyFile(path.resolve(__dirname, '../src/templates/_context.csx'), `${directoryPath}/scripts/${outputDirectory}/_context.csx`, (err) => {
 		if (err) {
 			console.error(err);
 			return;
@@ -71,4 +74,23 @@ export const extract = (directoryPath: string, filename: string) => {
 		}
     }
   );
+};
+
+export const extractFromDirectory = (directoryPath: string) => {
+	let policyDir = directoryPath;
+    policyDir = policyDir.endsWith('/')? policyDir.replace(/\/$/, "") : policyDir
+    // Read all files in the directory
+    fs.readdir(policyDir, (err, files) => {
+        // Handle errors
+        if (err) {
+            console.log(`Error reading directory: ${err}`);
+            return;
+        }
+        // Process each file
+        files.forEach((file) => {
+            if (file.endsWith(".xml") === true) {
+                extract(policyDir, file);
+            }
+        });
+    });
 };
