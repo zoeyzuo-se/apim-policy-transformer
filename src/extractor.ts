@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import {Constants} from "./constants";
 import path = require("path");
 
 
@@ -16,9 +17,6 @@ const extractScript = (directoryPath: string, filename: string) => {
 
 	// Find all the C# expressions in the policy file as inline expressions
 	const inline = xmlFile.match(inlinePattern)?.map((m) => m.slice(2, -1)) || [];
-
-	// Set separator
-	const separator = "// ================== This is separator =================="
 
 	// Read the template file
 	let template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
@@ -54,7 +52,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 			
 			scriptBody = scriptBody.replace((found[1] + found[2] + found[3]), `{${variableName}}`);
 		}
-		variables += `\t${separator}\n`;
+		variables += `\t${Constants.separator}\n`;
 		const blockTemplate = template.replace("{0}", variables);
 		let name = `block-${(index + 1).toString().padStart(3, "0")}`
 		xmlFile = xmlFile.replace(match, `${name}`);
@@ -72,7 +70,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 		
 		while ((found = namedValuePattern.exec(match)) !== null) {
 			if(variables === "") {
-				variables += `\t// The following named values have been extracted from the script and replaced with variables\r\n\t// Please check the script to ensure the string begins with a $ sign for string interpolation\r\n`;
+				variables += `\t// The following named values have been extracted from the script and replaced with variables\r\n\t// Please check the script to ensure the string begins with a $ sign for string interpolation\r\n\t// Please put non-policy related code above the separator. e.g named_value strings. Anything below separator would be added to policy file when running combiner\r\n`;
 			}
 			const variableName = `nv_${found[2].replace("-", "").trim()}`;
 			if(variables.includes(variableName) === false) {
@@ -80,7 +78,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 			}
 			scriptBody = scriptBody.replace((found[1] + found[2] + found[3]), `{${variableName}}`);
 		}
-		variables += `\t${separator}\n`;
+		variables += `\t${Constants.separator}\n`;
 		const inlineTemplate = template.replace("{0}", variables);
 
 		fs.writeFileSync(`${output}/${name}.csx`, inlineTemplate.replace('"{1}"', scriptBody));

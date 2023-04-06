@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { parseString } from 'xml2js';
+import {Constants} from './constants';
 
 async function combine (directoryPath: string) {
   const filenames = await getFilenamesInDirectory(directoryPath);
@@ -116,7 +116,7 @@ function removeSurroundingChars(str: string): string {
 }
 
 function removeCodeAboveSeparator(input: string): string {
-  const separator = "// ================== This is separator ==================";
+  const separator = Constants.separator;
   const separatorIndex = input.indexOf(separator);
   if (separatorIndex === -1) {
       return "";
