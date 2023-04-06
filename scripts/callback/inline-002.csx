@@ -32,6 +32,7 @@ Console.WriteLine(result.toString());
 // Please check the script to ensure the string begins with a $ sign for string interpolation
 private static dynamic ExtractedScript(ApimContext context)
 {
-{0}
-    return "{1}";
+	// ================== This is separator ==================
+
+    return context.Variables.GetValueOrDefault<IResponse>("response").Body.As<JObject>();
 }        

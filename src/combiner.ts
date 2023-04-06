@@ -14,8 +14,8 @@ async function combine (directoryPath: string) {
   // Get code outside of block-xxx.csx file and inline-xxx.csx file
   filenames.forEach(file => {
       if((file.startsWith('inline') ||file.startsWith('block')) && file.endsWith('.csx')) {
-          let codeSnippet = getCodeInMethod(`${directoryPath}/${file}`, 'Snippet')
-          codeSnippet = removeSurroundingChars(codeSnippet);
+          let codeSnippet = getCodeInMethod(`${directoryPath}/${file}`, 'ExtractedScript')
+          codeSnippet = refineCode(file, codeSnippet);
           const xmlPlaceholder = file.slice(0, -4);
           xmlFileContent = replaceAll(xmlFileContent, xmlPlaceholder, codeSnippet)
       }
@@ -24,7 +24,21 @@ async function combine (directoryPath: string) {
   });
     
 }
-
+function refineCode(file: string, codeSnippet: string | null): string {
+  if(codeSnippet === null) {
+      return '';
+  }
+  const inlinePrefix = "return "
+  if(file.startsWith('inline')) {
+    codeSnippet = codeSnippet.trim()
+    if(codeSnippet.startsWith(inlinePrefix)) {
+      return codeSnippet.substring(inlinePrefix.length).trim()
+    }
+  }
+  if(file.startsWith('block')) {
+      return `${codeSnippet}`
+  }
+}
 function getFilenamesInDirectory(directoryPath: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
     fs.readdir(directoryPath, (err, files) => {
@@ -74,8 +88,12 @@ function getCodeInMethod(csxFilePath: string, methodName: string): string | null
       }
     }
 
-    // Extract the code within the method
-    const codeInMethod: string = fileContents.slice(actualStartIndex, endIndex + 1);
+    // The code within the method
+    let codeInMethod: string = fileContents.slice(actualStartIndex, endIndex + 1);
+    codeInMethod = removeSurroundingChars(codeInMethod);
+    // Remove everything before the generated sepatators
+    codeInMethod = removeCodeAboveSeparator(codeInMethod);
+    codeInMethod = convertNamedValue(codeInMethod)
 
     return codeInMethod;
   } catch (error: any) {
@@ -94,7 +112,21 @@ function removeSurroundingChars(str: string): string {
   if (str.startsWith('{') && str.endsWith('}')) {
       str = str.slice(1, -1);
   }
-    return str.trim(); 
+    return str; 
+}
+
+function removeCodeAboveSeparator(input: string): string {
+  const separator = "// ================== This is separator ==================";
+  const separatorIndex = input.indexOf(separator);
+  if (separatorIndex === -1) {
+      return "";
+  }
+  return input.substring(separatorIndex + separator.length);
+}
+
+function convertNamedValue(input: string): string {
+  const regex = /{nv_(\w+)}/g;
+  return input.replace(regex, (match, p1) => `{{${p1.replace(/_/g, "-")}}}`);
 }
 
 export const combineFromDirectory = async (directoryPath: string) => {

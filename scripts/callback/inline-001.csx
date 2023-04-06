@@ -32,6 +32,11 @@ Console.WriteLine(result.toString());
 // Please check the script to ensure the string begins with a $ sign for string interpolation
 private static dynamic ExtractedScript(ApimContext context)
 {
-{0}
-    return "{1}";
+	// The following named values have been extracted from the script and replaced with variables
+	// Please check the script to ensure the string begins with a $ sign for string interpolation
+	string nv_clientid = ""; // Named Value: client-id
+	string nv_clientsecret = ""; // Named Value: client-secret
+	// ================== This is separator ==================
+
+    return $"grant_type=authorization_code&amp;code={context.Request.OriginalUrl.Query.GetValueOrDefault("code")}&amp;client_id={nv_clientid}&amp;client_secret={nv_clientsecret}&amp;redirect_uri=https://{context.Request.OriginalUrl.Host}/auth/callback";
 }        

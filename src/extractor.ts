@@ -3,70 +3,92 @@ import path = require("path");
 
 
 // Define RegEx patterns
-const bracePattern = /@{((?:[^{}]|{(?:[^{}]|{(?:[^{}]|{[^{}]*})*})*})*)}/g;
-const bracketPattern = /@\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
+const blockPattern = /@{((?:[^{}]|{(?:[^{}]|{(?:[^{}]|{[^{}]*})*})*})*)}/g;
+const inlinePattern = /@\((?:[^()]+|\((?:[^()]+|\([^()]*\))*\))*\)/g;
+const namedValuePattern = /({{)(.*?)(}})/g;
 
-const extract = (directoryPath: string, filename: string) => {
+const extractScript = (directoryPath: string, filename: string) => {
 	// Read the policy file
 	let xmlFile = fs.readFileSync(`${directoryPath}/${filename}`, "utf8");
 
 	// Find all the C# expressions in the policy file as blocks
-	const braceMatches = Array.from(xmlFile.matchAll(bracePattern), (m) => m[1] || m[2]);
+	const blocks = Array.from(xmlFile.matchAll(blockPattern), (m) => m[1] || m[2]);
 
 	// Find all the C# expressions in the policy file as inline expressions
-	const bracketMatches = xmlFile.match(bracketPattern)?.map((m) => m.slice(2, -1)) || [];
+	const inline = xmlFile.match(inlinePattern)?.map((m) => m.slice(2, -1)) || [];
+
+	// Set separator
+	const separator = "// ================== This is separator =================="
 
 	// Read the template file
-	// const template = fs.readFileSync(`${process.cwd()}/src/templates/script.csx`, "utf8");
-	// const template = fs.readFileSync(`./templates/script.csx`, "utf8");
-	const template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
+	let template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
+	// const template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
+
 	// Define the output directory name
-	const outputDirectory = filename.replace(".xml", "");
+	const output = `${directoryPath.replace("policies", "")}scripts/${filename.replace(".xml", "")}`;
+	// const outputDirectory = filename.replace(".xml", "");
 
 	// Create the output directory
-	fs.mkdirSync(`${directoryPath}/scripts/${outputDirectory}`, { recursive: true });
-	
+	fs.mkdirSync(output, { recursive: true });
+
 	// Copy the context class into the output directory
-	fs.copyFile(path.resolve(__dirname, '../src/templates/_context.csx'), `${directoryPath}/scripts/${outputDirectory}/_context.csx`, (err) => {
-		if (err) {
-			console.error(err);
-			return;
-		}
-	});
+	fs.copyFileSync(`${process.cwd()}/src/templates/context.csx`, `${output}/context.csx`);
+
+	// Copy the context settings into the output directory
+	fs.copyFileSync(`${process.cwd()}/src/templates/context.json`, `${output}/context.json`);
+
 
 	// Write the snippets out as C# scripts
-	braceMatches.forEach((match, index) => {
+	blocks.forEach((match, index) => {
+		let variables: string = "";
+		let found;
+		let scriptBody = match;
+		while ((found = namedValuePattern.exec(match)) !== null) {
+			if(variables === "") {
+				variables += `\t// The following named values have been extracted from the script and replaced with variables\r\n\t// Please check the script to ensure the string begins with a $ sign for string interpolation\r\n`;
+			}
+			const variableName = `nv_${found[2].replace("-", "_").trim()}`;
+			if(variables.includes(variableName) === false) {
+				variables += `\tstring ${variableName} = \"\"; // Named Value: ${found[2].trim()}\r\n`;
+			}
+			
+			scriptBody = scriptBody.replace((found[1] + found[2] + found[3]), `{${variableName}}`);
+		}
+		variables += `\t${separator}\n`;
+		const blockTemplate = template.replace("{0}", variables);
 		let name = `block-${(index + 1).toString().padStart(3, "0")}`
 		xmlFile = xmlFile.replace(match, `${name}`);
-		fs.writeFile(
-			`${directoryPath}/scripts/${outputDirectory}/${name}.csx`,
-			template.replace("return \"{0}\";", match),
-			(err) => {
-				if (err) {
-					console.error(err);
-				}
-			}
-		);
+
+		fs.writeFileSync(`${output}/${name}.csx`, blockTemplate.replace('return "{1}";', scriptBody));
 	});
 
 	// Write the snippets out as C# scripts
-	bracketMatches.forEach((match, index) => {
+	inline.forEach((match, index) => {
 		let name = `inline-${(index + 1).toString().padStart(3, "0")}`
 		xmlFile = xmlFile.replace(match, `${name}`);
-		fs.writeFile(
-			`${directoryPath}/scripts/${outputDirectory}/${name}.csx`,
-			template.replace("\"{0}\"", match),
-			(err) => {
-				if (err) {
-					console.error(err);
-				}
+		let variables: string = "";
+		let found;
+		let scriptBody = match;
+		
+		while ((found = namedValuePattern.exec(match)) !== null) {
+			if(variables === "") {
+				variables += `\t// The following named values have been extracted from the script and replaced with variables\r\n\t// Please check the script to ensure the string begins with a $ sign for string interpolation\r\n`;
 			}
-		);
+			const variableName = `nv_${found[2].replace("-", "").trim()}`;
+			if(variables.includes(variableName) === false) {
+				variables += `\tstring ${variableName} = \"\"; // Named Value: ${found[2].trim()}\r\n`;
+			}
+			scriptBody = scriptBody.replace((found[1] + found[2] + found[3]), `{${variableName}}`);
+		}
+		variables += `\t${separator}\n`;
+		const inlineTemplate = template.replace("{0}", variables);
+
+		fs.writeFileSync(`${output}/${name}.csx`, inlineTemplate.replace('"{1}"', scriptBody));
 	});
 
 	// Create a new xml file
 	  fs.writeFile(
-		`${directoryPath}/scripts/${outputDirectory}/replaced.xml`,
+		`${output}/replaced.xml`,
 		xmlFile,
 		(err) => {
 		if (err) {
@@ -89,7 +111,7 @@ export const extractFromDirectory = (directoryPath: string) => {
         // Process each file
         files.forEach((file) => {
             if (file.endsWith(".xml") === true) {
-                extract(policyDir, file);
+                extractScript(policyDir, file);
             }
         });
     });

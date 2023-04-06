@@ -32,6 +32,20 @@ Console.WriteLine(result.toString());
 // Please check the script to ensure the string begins with a $ sign for string interpolation
 private static dynamic ExtractedScript(ApimContext context)
 {
-{0}
-    return "{1}";
+	// The following named values have been extracted from the script and replaced with variables
+	// Please check the script to ensure the string begins with a $ sign for string interpolation
+	string nv_enc_key = ""; // Named Value: enc-key
+	// ================== This is separator ==================
+
+    
+            var rng = new RNGCryptoServiceProvider();
+            var iv = new byte[16];
+            rng.GetBytes(iv);
+            byte[] tokenBytes = Encoding.UTF8.GetBytes((string)(context.Variables.GetValueOrDefault<JObject>("token"))["access_token"]);
+            byte[] encryptedToken = tokenBytes.Encrypt("Aes", Convert.FromBase64String("{nv_enc_key}"), iv);
+            byte[] combinedContent = new byte[iv.Length + encryptedToken.Length];
+            Array.Copy(iv, 0, combinedContent, 0, iv.Length);
+            Array.Copy(encryptedToken, 0, combinedContent, iv.Length, encryptedToken.Length);
+            return System.Net.WebUtility.UrlEncode(Convert.ToBase64String(combinedContent));
+        
 }        

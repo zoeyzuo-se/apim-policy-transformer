@@ -32,6 +32,11 @@ Console.WriteLine(result.toString());
 // Please check the script to ensure the string begins with a $ sign for string interpolation
 private static dynamic ExtractedScript(ApimContext context)
 {
-{0}
-    return "{1}";
+	// The following named values have been extracted from the script and replaced with variables
+	// Please check the script to ensure the string begins with a $ sign for string interpolation
+	string nv_cookiename = ""; // Named Value: cookie-name
+	string nv_cookiedomain = ""; // Named Value: cookie-domain
+	// ================== This is separator ==================
+
+    return $"{nv_cookiename}={context.Variables.GetValueOrDefault<string>("cookie")}; Secure; SameSite=Strict; Path=/; Domain={nv_cookiedomain}; HttpOnly";
 }        
