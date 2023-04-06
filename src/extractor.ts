@@ -30,10 +30,20 @@ const extractScript = (directoryPath: string, filename: string) => {
 	fs.mkdirSync(output, { recursive: true });
 
 	// Copy the context class into the output directory
-	fs.copyFileSync(`${process.cwd()}/src/templates/context.csx`, `${output}/context.csx`);
+	fs.copyFile(path.resolve(__dirname, '../src/templates/context.csx'), `${output}/context.csx`, (err) => {
+		if (err) {
+			console.error(err);
+			return;
+		}
+	});
 
 	// Copy the context settings into the output directory
-	fs.copyFileSync(`${process.cwd()}/src/templates/context.json`, `${output}/context.json`);
+	fs.copyFile(path.resolve(__dirname, '../src/templates/context.json'), `${output}/context.json`, (err) => {
+		if (err) {
+			console.error(err);
+			return;
+		}
+	});
 
 
 	// Write the snippets out as C# scripts
@@ -72,7 +82,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 			if(variables === "") {
 				variables += `\t// The following named values have been extracted from the script and replaced with variables\r\n\t// Please check the script to ensure the string begins with a $ sign for string interpolation\r\n\t// Please put non-policy related code above the separator. e.g named_value strings. Anything below separator would be added to policy file when running combiner\r\n`;
 			}
-			const variableName = `nv_${found[2].replace("-", "").trim()}`;
+			const variableName = `nv_${found[2].replace("-", "_").trim()}`;
 			if(variables.includes(variableName) === false) {
 				variables += `\tstring ${variableName} = ""; // Named Value: ${found[2].trim()}\r\n`;
 			}
