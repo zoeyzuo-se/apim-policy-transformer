@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node ./bin/index.js",
     "dev": "node ./src/index.ts",
+    "lint:check": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -23,6 +25,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.15.10",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "eslint": "^8.37.0",
     "typescript": "^5.0.2"
   },
   "dependencies": {
