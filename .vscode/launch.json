@@ -29,18 +29,6 @@
             ],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false
-        },
-        {
-            "name": ".NET Script Debug",
-            "type": "coreclr",
-            "request": "launch",
-            "program": "${env:HOME}/.dotnet/tools/dotnet-script",
-            "args": ["${file}"],
-            "windows": {
-              "program": "${env:USERPROFILE}/.dotnet/tools/dotnet-script.exe",
-            },
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-          }
+        }
     ]
 }

@@ -1,62 +1,53 @@
-# apim-policy-transformer CLI Readme
-:boom: Please note that this package is still under development. :)
+# APIM Policy Transformer
+💥 Please note that this package is still under development. 🙂
 
-The apim-policy-transformer CLI tool is designed to extract C# code snippets from Azure APIM policy XML files. It can also combine them back into the policy XML file (TODO).
+The apim-policy-transformer CLI tool is designed to extract C# code snippets from Azure APIM policy XML files, and combine them back into the policy XML file. It also handles named values.
 
-This extractor is based on Ira Rainey's work: [apim-script-extractor](https://github.com/irarainey/apim-script-extractor)
+This extractor is based on Ira Rainey's work: [apim-script-extractor](https://github.com/irarainey/apim-script-extractor).
 
-## SetUp
-The apim-policy-transformer tool can be set up locally
+## Setup
+The apim-policy-transformer tool can be set up locally.
 
-### Prerequisite
-- Node
-- NPM / Yarn
+### Prerequisites
+- [Node](https://nodejs.org/en)
+- [NPM](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
 
-```sh
-$root: yarn build
-$root: yarn start extract ./path/to/policyDir
-``` 
-Alternatively, you can publish the package locally and run it:
-```sh
-$root: yarn build
-$root: yarn link --global
-$root: apim-policy-transformer extract ./path/to/policyDir
-
-```
-Note: please be sure to add .yarn/bin to $PATH
-
-## Installation (TODO)
+### Installation
 The apim-policy-transformer tool can be installed using npm. To install globally, run the following command:
 
-```sh
+```bash
 npm install -g apim-policy-transformer
 ```
 Alternatively, you can install it locally in your project folder by running:
 
-```sh
+```bash
 npm install apim-policy-transformer
 ```
 
-## Usage
+### Usage
+#### Extract C# code snippets 📜
 
-## Extract C# code snippets
 To extract C# code snippets from an APIM policy XML file, run the following command:
 
-```sh
+```bash
 apim-policy-transformer extract <path-to-policy-xml-folder>
 ```
-This will iterate throughthe policy XML folder and extract all C# code snippets found in the policy XML files and save them to individual .csx files in a subdirectory called `scripts`
+This will iterate through the policy XML folder and extract all C# code snippets found in the policy XML files, and save them to individual .csx files in a directory called `scripts` located besides the policy directory
 
-## Combine C# code snippets back into APIM policy XML file (TODO)
+#### Combine C# code snippets back into APIM policy XML file 🔗
+
 To combine C# code snippets back into an APIM policy XML file, run the following command:
 
-```sh
+```bash
 apim-policy-transformer combine <path-to-scripts-folder>
 ```
+
 This will combine all .csx files found in the scripts folder into the policy XML file and save the updated XML file in the same directory with a suffix -new appended to the original file name.
 
-## Contributing
-We welcome contributions to the apim-policy-transformer tool! If you encounter a bug or have a feature request, please open an issue on the GitHub repository. If you would like to contribute code, please fork the repository and submit a pull request with your changes.
+### Contributing
+We welcome contributions to the apim-policy-transformer tool! If you encounter a bug 🐞 or have a feature request 🚀, please open an issue on the GitHub repository. If you would like to contribute code 💻, please fork the repository and submit a pull request with your changes. Please have a look at [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-## License
-This project is licensed under the MIT License.
+
+
+### License
+This project is licensed under the MIT License. 📝
