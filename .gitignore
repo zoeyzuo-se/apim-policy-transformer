@@ -4,4 +4,4 @@ dist
 node_modules
 .vscode-test/
 *.vsix
-policies/scripts
+scripts/
