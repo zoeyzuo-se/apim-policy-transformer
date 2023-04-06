@@ -61,7 +61,7 @@ function getCodeInMethod(csxFilePath: string, methodName: string): string | null
     const fileContents: string = fs.readFileSync(csxFilePath, 'utf8');
 
     // Find the starting index of the desired method
-    const startRegex: RegExp = new RegExp(`(?<=\\b(?:public|private|internal)?\\s+(?:async\\s+)?(?:static\\s+)?(?:readonly\\s+)?(?:partial\\s+)?(?:unsafe\\s+)?(?:virtual\\s+)?(?:override\\s+)?\\w+\\s+${methodName}\\s*\\()`);
+    const startRegex = new RegExp(`(?<=\\b(?:public|private|internal)?\\s+(?:async\\s+)?(?:static\\s+)?(?:readonly\\s+)?(?:partial\\s+)?(?:unsafe\\s+)?(?:virtual\\s+)?(?:override\\s+)?\\w+\\s+${methodName}\\s*\\()`);
     const startIndex: number = fileContents.search(startRegex);
 
     if (startIndex === -1) {
@@ -70,7 +70,7 @@ function getCodeInMethod(csxFilePath: string, methodName: string): string | null
     }
 
     // Find the ending index of the desired method
-    let openBraces: number = 0;
+    let openBraces = 0;
     let actualStartIndex: number = startIndex;
     let endIndex: number = startIndex;
     for (let i = startIndex; i < fileContents.length; i++) {

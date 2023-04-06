@@ -19,7 +19,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 	const inline = xmlFile.match(inlinePattern)?.map((m) => m.slice(2, -1)) || [];
 
 	// Read the template file
-	let template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
+	const template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
 	// const template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
 
 	// Define the output directory name
@@ -38,7 +38,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 
 	// Write the snippets out as C# scripts
 	blocks.forEach((match, index) => {
-		let variables: string = "";
+		let variables = "";
 		let found;
 		let scriptBody = match;
 		while ((found = namedValuePattern.exec(match)) !== null) {
@@ -47,14 +47,14 @@ const extractScript = (directoryPath: string, filename: string) => {
 			}
 			const variableName = `nv_${found[2].replace("-", "_").trim()}`;
 			if(variables.includes(variableName) === false) {
-				variables += `\tstring ${variableName} = \"\"; // Named Value: ${found[2].trim()}\r\n`;
+				variables += `\tstring ${variableName} = ""; // Named Value: ${found[2].trim()}\r\n`;
 			}
 			
 			scriptBody = scriptBody.replace((found[1] + found[2] + found[3]), `{${variableName}}`);
 		}
 		variables += `\t${Constants.separator}\n`;
 		const blockTemplate = template.replace("{0}", variables);
-		let name = `block-${(index + 1).toString().padStart(3, "0")}`
+		const name = `block-${(index + 1).toString().padStart(3, "0")}`
 		xmlFile = xmlFile.replace(match, `${name}`);
 
 		fs.writeFileSync(`${output}/${name}.csx`, blockTemplate.replace('return "{1}";', scriptBody));
@@ -62,9 +62,9 @@ const extractScript = (directoryPath: string, filename: string) => {
 
 	// Write the snippets out as C# scripts
 	inline.forEach((match, index) => {
-		let name = `inline-${(index + 1).toString().padStart(3, "0")}`
+		const name = `inline-${(index + 1).toString().padStart(3, "0")}`
 		xmlFile = xmlFile.replace(match, `${name}`);
-		let variables: string = "";
+		let variables = "";
 		let found;
 		let scriptBody = match;
 		
@@ -74,7 +74,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 			}
 			const variableName = `nv_${found[2].replace("-", "").trim()}`;
 			if(variables.includes(variableName) === false) {
-				variables += `\tstring ${variableName} = \"\"; // Named Value: ${found[2].trim()}\r\n`;
+				variables += `\tstring ${variableName} = ""; // Named Value: ${found[2].trim()}\r\n`;
 			}
 			scriptBody = scriptBody.replace((found[1] + found[2] + found[3]), `{${variableName}}`);
 		}
@@ -85,7 +85,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 	});
 
 	// Create a new xml file
-	  fs.writeFile(
+	fs.writeFile(
 		`${output}/replaced.xml`,
 		xmlFile,
 		(err) => {
