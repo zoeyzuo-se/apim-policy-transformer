@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {Constants} from './constants';
+import {separator} from './constants';
 
 async function combine (directoryPath: string) {
   const filenames = await getFilenamesInDirectory(directoryPath);
@@ -116,7 +116,6 @@ function removeSurroundingChars(str: string): string {
 }
 
 function removeCodeAboveSeparator(input: string): string {
-  const separator = Constants.separator;
   const separatorIndex = input.indexOf(separator);
   if (separatorIndex === -1) {
       return "";
@@ -140,8 +139,8 @@ export const combineFromDirectory = async (directoryPath: string) => {
       .map((dirent) => dirent.name);
 
   // Iterate thru subdirs
-  subdirs.forEach((subdir) => {
+  subdirs.forEach(async (subdir) => {
       const subdirPath = `${scriptsDir}/${subdir}`;
-      combine(subdirPath);
+      await combine(subdirPath);
   });
 };

@@ -24,6 +24,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/figlet": "^1.5.5",
     "@types/node": "^18.15.10",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
@@ -31,6 +32,8 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
+    "commander": "^10.0.0",
+    "figlet": "^1.6.0",
     "fs": "^0.0.1-security",
     "xml2js": "^0.4.23"
   }

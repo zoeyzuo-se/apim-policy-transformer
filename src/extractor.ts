@@ -1,7 +1,6 @@
 import * as fs from "fs";
-import {Constants} from "./constants";
+import {separator} from "./constants";
 import path = require("path");
-
 
 // Define RegEx patterns
 const blockPattern = /@{((?:[^{}]|{(?:[^{}]|{(?:[^{}]|{[^{}]*})*})*})*)}/g;
@@ -62,7 +61,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 			
 			scriptBody = scriptBody.replace((found[1] + found[2] + found[3]), `{${variableName}}`);
 		}
-		variables += `\t${Constants.separator}\n`;
+		variables += `\t${separator}\n`;
 		const blockTemplate = template.replace("{0}", variables);
 		const name = `block-${(index + 1).toString().padStart(3, "0")}`
 		xmlFile = xmlFile.replace(match, `${name}`);
@@ -88,7 +87,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 			}
 			scriptBody = scriptBody.replace((found[1] + found[2] + found[3]), `{${variableName}}`);
 		}
-		variables += `\t${Constants.separator}\n`;
+		variables += `\t${separator}\n`;
 		const inlineTemplate = template.replace("{0}", variables);
 
 		fs.writeFileSync(`${output}/${name}.csx`, inlineTemplate.replace('"{1}"', scriptBody));
@@ -108,17 +107,21 @@ const extractScript = (directoryPath: string, filename: string) => {
 
 export const extractFromDirectory = (directoryPath: string) => {
 	let policyDir = directoryPath;
+	console.log("extractFromDirectory function")
     policyDir = policyDir.endsWith('/')? policyDir.replace(/\/$/, "") : policyDir
+	console.log("policyDir: " + policyDir)
     // Read all files in the directory
-    fs.readdir(policyDir, (err, files) => {
+    fs.readdir(path.resolve(policyDir), (err, files) => {
         // Handle errors
         if (err) {
-            console.log(`Error reading directory: ${err}`);
-            return;
+			console.error(`Error reading directory: ${err}`);
+			throw(err);
         }
+		console.log(`No Error reading directory`);
         // Process each file
         files.forEach((file) => {
             if (file.endsWith(".xml") === true) {
+				console.log("processing file: " + file)
                 extractScript(policyDir, file);
             }
         });
