@@ -1,4 +1,4 @@
-// #!/usr/bin/env npx ts-node
+#!/usr/bin/env npx ts-node
 import { cliHelp } from "./constants";
 import * as commander from 'commander';
 import { extractFromDirectory } from './extractor';

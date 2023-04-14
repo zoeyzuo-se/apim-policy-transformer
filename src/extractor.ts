@@ -107,9 +107,7 @@ const extractScript = (directoryPath: string, filename: string) => {
 
 export const extractFromDirectory = (directoryPath: string) => {
     let policyDir = directoryPath;
-    console.log("extractFromDirectory function")
     policyDir = policyDir.endsWith('/') ? policyDir.replace(/\/$/, "") : policyDir
-    console.log("policyDir: " + policyDir)
     // Read all files in the directory
     fs.readdir(path.resolve(policyDir), (err, files) => {
         // Handle errors
@@ -117,11 +115,9 @@ export const extractFromDirectory = (directoryPath: string) => {
             console.error(`Error reading directory: ${err}`);
             throw (err);
         }
-        console.log(`No Error reading directory`);
         // Process each file
         files.forEach((file) => {
             if (file.endsWith(".xml") === true) {
-                console.log("processing file: " + file)
                 extractScript(policyDir, file);
             }
         });
