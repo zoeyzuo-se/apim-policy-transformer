@@ -13,7 +13,7 @@ If you would like to contribute code to apim-policy-transformer, please follow t
 - Install the dependencies using `yarn install`
 - Make changes to the code
 - Build the code in the root directory using `yarn build`
-- Run the code using `yarn start extract <absolute/path/to/policy/folder>` or `yarn start combine <absolute/path/to/scripts/folder>`
+- Run the code using `yarn start -e|--extract <absolute/path/to/policy/folder>` or `yarn start -c|--combine <absolute/path/to/scripts/folder>`
 - Debug the code in VSCode using debugger.
     - 🛠️ Open the debugger on the left pane
     - 🐛 Choose "Debug node script"
