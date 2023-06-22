@@ -9,8 +9,8 @@ export const cliHelp = `
 ✅ Usage: apim-policy-transformer <command> <directory path>
 
 👉 Examples:
-    $ apim-policy-transformer -c|--combine /absolute/path/to/policies
-    $ apim-policy-transformer -e|--extract /absolute/path/to/scripts
+    $ apim-policy-transformer -c|--combine path/to/policies
+    $ apim-policy-transformer -e|--extract path/to/scripts
 
 🔎 Here's what each command does:
     📥 extract: Extracts inline policies and policy sets from XML files in a directory and generates .csx files for each policy.
