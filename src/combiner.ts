@@ -1,7 +1,8 @@
 import * as fs from 'fs';
+import path from 'path';
 import { separator } from './constants';
 
-async function combine(directoryPath: string) {
+async function combine(directoryPath: string, destinationPath?: string) {
     const filenames = await getFilenamesInDirectory(directoryPath);
 
     // Compute the xml filename for storing the result
@@ -20,7 +21,17 @@ async function combine(directoryPath: string) {
             xmlFileContent = replaceAll(xmlFileContent, xmlPlaceholder, codeSnippet)
         }
         // Write the combined XML to a file
-        fs.writeFileSync(`${directoryPath}/${xmlFilename}`, xmlFileContent);
+        if (!destinationPath) {
+            fs.writeFileSync(`${directoryPath}/${xmlFilename}`, xmlFileContent);
+        } else {
+            updateFileInDirectory(destinationPath, xmlFilename, xmlFileContent)
+                .then(() => {
+                    console.log('File update complete.');
+                })
+                .catch((error) => {
+                    console.error('An error occurred while updating the file:', error);
+                }); 
+        }
     });
 
 }
@@ -128,7 +139,29 @@ function convertNamedValue(input: string): string {
     return input.replace(regex, (match, p1) => `{{${p1.replace(/_/g, "-")}}}`);
 }
 
-export const combineFromDirectory = async (directoryPath: string) => {
+async function updateFileInDirectory(destinationPath: string, fileName: string, content: string): Promise<void> {
+    const files = fs.readdirSync(destinationPath);
+  
+    if (files.includes(fileName)) {
+        const filePath = path.join(destinationPath, fileName);
+        fs.writeFileSync(filePath, content);
+        return;
+    }
+  
+    for (const file of files) {
+        const filePath = path.join(destinationPath, file);
+        const isDirectory = fs.statSync(filePath).isDirectory();
+  
+        if (isDirectory) {
+            await updateFileInDirectory(filePath, fileName, content);
+        }
+    }
+  
+    const rootFilePath = path.join(destinationPath, fileName);
+    fs.writeFileSync(rootFilePath, content);
+}
+
+export const combineFromDirectory = async (directoryPath: string, destinationPath?: string) => {
     let scriptsDir = directoryPath;
     scriptsDir = scriptsDir.endsWith('/') ? scriptsDir.slice(0, -1) : scriptsDir
 
@@ -141,6 +174,6 @@ export const combineFromDirectory = async (directoryPath: string) => {
     // Iterate thru subdirs
     subdirs.forEach(async (subdir) => {
         const subdirPath = `${scriptsDir}/${subdir}`;
-        await combine(subdirPath);
+        await combine(subdirPath, destinationPath);
     });
 };

@@ -13,7 +13,7 @@
 		<return-response>
 			<set-status code="302" reason="Temporary Redirect" />
 			<set-header name="Set-Cookie" exists-action="override">
-				<value>@($"{{cookie-name}}=; Secure; SameSite=Strict; Path=/; HttpOnly; Domain={{cookie-domain}}; Expires=Thurs, 01 Jan 1970 00:00:00 GMT")</value>
+				<value>@($"{{cookie-name}}=; Secure; SameSite=Strict; Path=/; HttpOnly; Domain={{cookie-domain}}; Expires=Thurs, 01 Jan 1970 00:00:00 GMT";)</value>
 			</set-header>
 			<set-header name="Location" exists-action="override">
 				<value>{{return-uri}}</value>

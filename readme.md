@@ -31,7 +31,7 @@ npm install apim-policy-transformer
 
 ```typescript
 apim-policy-transformer.extract(directoryPath: string)
-apim-policy-transformer.combine(directoryPath: string)
+apim-policy-transformer.combine(directoryPath: string, destinationPath?: string)
 ```
 
 #### The following options are available for CLI tool:
@@ -45,7 +45,7 @@ apim-policy-transformer.combine(directoryPath: string)
 
 You can use the `apim-policy-transformer` tool to extract C# code snippets from an APIM policy XML file, debugging them and/or combine C# code snippets back into an APIM policy XML file.
 
-#### Extract C# code snippets 📜
+#### Extract C# code 📜
 
 To extract C# code snippets from an APIM policy XML file, run the following command:
 
@@ -54,15 +54,15 @@ apim-policy-transformer -e|--extract <directory-path>
 ```
 Where <directory-path> is the path to the directory containing the policy XML files. By default, the extracted code snippets will be saved to individual `.csx` files in a directory called scripts, located next to the directory containing the policy XML files.
 
-#### Combine C# code snippets back into APIM policy XML file 🔗
+#### Combine C# code back into XML 🔗
 
 To combine C# code snippets back into an APIM policy XML file, run the following command:
 
 ```bash
-apim-policy-transformer -c|--combine <path-to-scripts-folder>
+apim-policy-transformer -c|--combine <path-to-scripts-folder> <destination-path>(optional)
 ```
 
-Where <directory-path> is the path to the directory containing the extracted `.csx` files. By default, the combined policy XML file will be saved in the same directory with the name same as directory name.
+Where <directory-path> is the path to the directory containing the extracted `.csx` files. By default, the combined policy XML file will be saved in the same directory with the name same as directory name if destination-path is not provided. If destination-path is provided, the combiner will update the policy XML file in the destination path, or create one in the root folder if the original file doesn't exist. The mapping is through the file name.
 
 #### Debug the extracted .csx files 🐛
 - Put the following code in `.vscode/launch.json`
