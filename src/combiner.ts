@@ -13,11 +13,11 @@ async function combine(directoryPath: string, destinationPath?: string) {
     let xmlFileContent = fs.readFileSync(`${directoryPath}/replaced.xml`, 'utf8');
 
     // Get code outside of block-xxx.csx file and inline-xxx.csx file
-    filenames.forEach(file => {
-        if ((file.startsWith('inline') || file.startsWith('block')) && file.endsWith('.csx')) {
-            let codeSnippet = getCodeInMethod(`${directoryPath}/${file}`, 'ExtractedScript')
-            codeSnippet = refineCode(file, codeSnippet);
-            const xmlPlaceholder = file.slice(0, -4);
+    filenames.forEach(filename => {
+        if ((filename.startsWith('inline') || filename.startsWith('block')) && filename.endsWith('.csx')) {
+            let codeSnippet = getCodeInMethod(`${directoryPath}/${filename}`, 'ExtractedScript')
+            codeSnippet = refineCode(filename, codeSnippet);
+            const xmlPlaceholder = filename.slice(0, -4);
             xmlFileContent = replaceAll(xmlFileContent, xmlPlaceholder, codeSnippet)
         }
         // Write the combined XML to a file
@@ -33,8 +33,8 @@ async function combine(directoryPath: string, destinationPath?: string) {
                 }); 
         }
     });
-
 }
+
 function refineCode(file: string, codeSnippet: string | null): string {
     if (codeSnippet === null) {
         return '';
@@ -43,13 +43,26 @@ function refineCode(file: string, codeSnippet: string | null): string {
     if (file.startsWith('inline')) {
         codeSnippet = codeSnippet.trim()
         if (codeSnippet.startsWith(inlinePrefix)) {
-            return codeSnippet.substring(inlinePrefix.length).trim()
+            codeSnippet = codeSnippet.substring(inlinePrefix.length).trim() // remove "return " prefix
+            return codeSnippet.slice(0, -1) // remove ";" suffix
         }
     }
     if (file.startsWith('block')) {
-        return `${codeSnippet}`
+
+        const lines = codeSnippet.split('\n').map(line => line);
+        const nonEmptyLines = lines.filter(line => line !== '');
+        const indentation = nonEmptyLines[0].match(/^\s*/)![0];
+        const formattedContent = nonEmptyLines.map((line, index) => {
+            if (index === 0 || index === nonEmptyLines.length - 1) {
+                return line;
+            }
+            return `${indentation}${line}`;
+        }).join('\n');
+        
+        return `${formattedContent}`
     }
 }
+
 function getFilenamesInDirectory(directoryPath: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
         fs.readdir(directoryPath, (err, files) => {
@@ -162,18 +175,20 @@ async function updateFileInDirectory(destinationPath: string, fileName: string, 
 }
 
 export const combineFromDirectory = async (directoryPath: string, destinationPath?: string) => {
-    let scriptsDir = directoryPath;
-    scriptsDir = scriptsDir.endsWith('/') ? scriptsDir.slice(0, -1) : scriptsDir
-
+    const projectRoot = process.cwd();
+    let directoryPathResolved = path.resolve(projectRoot, directoryPath);
+    let destinationPathResolved = destinationPath ? path.resolve(projectRoot, destinationPath) : undefined;
+    directoryPathResolved = directoryPathResolved.endsWith('/') ? directoryPathResolved.slice(0, -1) : directoryPathResolved
+    destinationPathResolved = destinationPathResolved?.endsWith('/') ? destinationPathResolved.slice(0, -1) : destinationPathResolved
     // Read subdir names to an array
     const subdirs = fs
-        .readdirSync(scriptsDir, { withFileTypes: true })
+        .readdirSync(directoryPathResolved, { withFileTypes: true })
         .filter((dirent) => dirent.isDirectory())
         .map((dirent) => dirent.name);
 
     // Iterate thru subdirs
     subdirs.forEach(async (subdir) => {
-        const subdirPath = `${scriptsDir}/${subdir}`;
-        await combine(subdirPath, destinationPath);
+        const subdirPath = `${directoryPathResolved}/${subdir}`;
+        await combine(subdirPath, destinationPathResolved);
     });
 };

@@ -16,8 +16,8 @@
                 "${workspaceFolder}/**/*.js"
             ],
             "args": [
-                "--combine",
-                "/path/to/scripts"
+                "-c",
+                "scripts"
             ]
         },
         {

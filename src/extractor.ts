@@ -21,7 +21,7 @@ const extractScript = (directoryPath: string, filename: string) => {
     const template = fs.readFileSync(path.resolve(__dirname, '../src/templates/script.csx'), "utf8");
 
     // Define the output directory name
-    const output = `${directoryPath.replace("policies", "")}scripts/${filename.replace(".xml", "")}`;
+    const output = `${path.dirname(directoryPath)}/scripts/${filename.replace(".xml", "")}`;
 
     // Create the output directory
     fs.mkdirSync(output, { recursive: true });
@@ -106,10 +106,11 @@ const extractScript = (directoryPath: string, filename: string) => {
 function addDollarSign(input: string): string {
     const pattern = /("[^"]*\{nv_\w+}[^"]*")/g;
     return input.replace(pattern, (match) => match.replace(/^"/, '$"'));
-  }
+}
 
 export const extractFromDirectory = (directoryPath: string) => {
-    let policyDir = directoryPath;
+    const projectRoot = process.cwd();
+    let policyDir = path.resolve(projectRoot, directoryPath);
     policyDir = policyDir.endsWith('/') ? policyDir.replace(/\/$/, "") : policyDir
     // Read all files in the directory
     fs.readdir(path.resolve(policyDir), (err, files) => {
