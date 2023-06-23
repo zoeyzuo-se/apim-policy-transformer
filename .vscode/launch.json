@@ -17,7 +17,7 @@
             ],
             "args": [
                 "--combine",
-                "/Users/zoeyzuo/Documents/work/LSEG/checkExistingExtensions/scripts"
+                "/path/to/scripts"
             ]
         },
         {
