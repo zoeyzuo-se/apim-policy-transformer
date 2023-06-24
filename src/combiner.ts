@@ -48,10 +48,9 @@ function refineCode(file: string, codeSnippet: string | null): string {
         }
     }
     if (file.startsWith('block')) {
-
         const lines = codeSnippet.split('\n').map(line => line);
         const nonEmptyLines = lines.filter(line => line !== '');
-        const indentation = nonEmptyLines[0].match(/^\s*/)![0];
+        const indentation = nonEmptyLines[0].match(/^\s*/)?.[0];
         const formattedContent = nonEmptyLines.map((line, index) => {
             if (index === 0 || index === nonEmptyLines.length - 1) {
                 return line;
