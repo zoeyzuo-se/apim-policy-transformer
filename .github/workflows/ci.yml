@@ -10,8 +10,7 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  discussions: write
+permissions: write-all
 
 jobs:
   lint:
