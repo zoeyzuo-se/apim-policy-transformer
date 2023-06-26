@@ -3,10 +3,13 @@ name: Lint and Test
 on:
   push:
     branches:
-      - main  # Replace with your branch name if needed
+      - main
   pull_request:
     branches:
-      - main  # Replace with your branch name if needed
+      - main
+  workflow_dispatch:
+
+permissions: write-all
 
 jobs:
   lint:
@@ -29,3 +32,9 @@ jobs:
       
       - name: Run tests
         run: yarn test
+      
+      - name: Check files
+        run: ls -la
+      
+      - name: Jest coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2.2.4
