@@ -5,13 +5,13 @@ on:
     branches:
       - main
       - test/finish-unit-test
-  pull_request_target:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
 
 permissions:
-  contents: write
+  discussions: write
 
 jobs:
   lint:
