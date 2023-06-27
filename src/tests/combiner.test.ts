@@ -1,7 +1,6 @@
 import { combineFromDirectory } from '../combiner';
 import * as scriptCombiner from '../scriptCombiner';
 import fs from 'fs';
-import path from 'path';
 jest.mock('../getVersion', () => ({
     getVersion: jest.fn( () => '1.0.0'),
 }));
