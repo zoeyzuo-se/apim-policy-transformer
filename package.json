@@ -1,6 +1,6 @@
 {
   "name": "apim-policy-transformer",
-  "version": "1.0.0",
+  "version": "1.0.0-local",
   "description": "An Azure API Management policy XML file transformer",
   "main": "bin/index.js",
   "bin": "bin/index.js",

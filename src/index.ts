@@ -47,7 +47,12 @@ if (!process.argv.slice(2).length) {
     program.outputHelp();
 }
 
-module.exports = {
+export = {
     extractor: extractFromDirectory,
     combiner: combineFromDirectory
 }
+
+// module.exports = {
+//     extractor: extractFromDirectory,
+//     combiner: combineFromDirectory
+// }

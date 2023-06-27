@@ -35,7 +35,7 @@ export async function combineScript(directoryPath: string, destinationPath?: str
     });
 }
 
-function refineCode(file: string, codeSnippet: string | null): string {
+function refineCode(file: string, codeSnippet: string | null): string | null {
     if (codeSnippet === null) {
         return '';
     }
@@ -60,6 +60,8 @@ function refineCode(file: string, codeSnippet: string | null): string {
         
         return `${formattedContent}`
     }
+
+    return codeSnippet
 }
 
 function getFilenamesInDirectory(directoryPath: string): Promise<string[]> {
@@ -125,8 +127,9 @@ function getCodeInMethod(csxFilePath: string, methodName: string): string | null
     }
 }
 
-function replaceAll(xml: string, toReplace: string, replacement: string): string {
+function replaceAll(xml: string, toReplace: string, replacement: string | null): string {
     const regex = new RegExp(toReplace, 'g');
+    replacement = replacement ? replacement : '';
     xml = xml.replace(regex, replacement);
     return xml;
 }
