@@ -1,11 +1,11 @@
-# APIM Policy Transformer
+# APIM Policy Utils
 
-The apim-policy-transformer is an npm package and CLI tool designed to extract C# code snippets from Azure APIM policy XML files, and combine them back into the policy XML file. This tool also handles named values.
+The apim-policy-utils is an npm package and CLI tool designed to extract C# code snippets from Azure APIM policy XML files, and combine them back into the policy XML file. This tool also handles named values.
 
 This extractor is based on Ira Rainey's work: [apim-script-extractor](https://github.com/irarainey/apim-script-extractor).
 
 ## Setup
-The apim-policy-transformer tool can be set up locally.
+The apim-policy-utils tool can be set up locally.
 
 ### Prerequisites
 - [Node](https://nodejs.org/en)
@@ -14,15 +14,15 @@ The apim-policy-transformer tool can be set up locally.
 - [dotnet-script CLI tool](https://github.com/dotnet-script/dotnet-script)
 
 ### Installation
-The apim-policy-transformer tool can be installed using npm. To install globally, run the following command:
+The apim-policy-utils tool can be installed using npm. To install globally, run the following command:
 
 ```bash
-npm install -g apim-policy-transformer
+npm install -g apim-policy-utils
 ```
 Alternatively, you can install it locally in your project folder by running:
 
 ```bash
-npm install apim-policy-transformer
+npm install apim-policy-utils
 ```
 
 ### Usage
@@ -30,8 +30,8 @@ npm install apim-policy-transformer
 #### The following methods are available for the npm package:
 
 ```typescript
-apim-policy-transformer.extract(directoryPath: string)
-apim-policy-transformer.combine(directoryPath: string, destinationPath?: string)
+apim-policy-utils.extract(directoryPath: string)
+apim-policy-utils.combine(directoryPath: string, destinationPath?: string)
 ```
 
 #### The following options are available for CLI tool:
@@ -43,14 +43,14 @@ apim-policy-transformer.combine(directoryPath: string, destinationPath?: string)
 -e, --extract    extract C# code snippets from APIM policy XML file
 ```
 
-You can use the `apim-policy-transformer` tool to extract C# code snippets from an APIM policy XML file, debugging them and/or combine C# code snippets back into an APIM policy XML file.
+You can use the `apim-policy-utils` tool to extract C# code snippets from an APIM policy XML file, debugging them and/or combine C# code snippets back into an APIM policy XML file.
 
 #### Extract C# code 📜
 
 To extract C# code snippets from an APIM policy XML file, run the following command:
 
 ```bash
-apim-policy-transformer -e|--extract <directory-path>
+apim-policy-utils -e|--extract <directory-path>
 ```
 Where <directory-path> is the path to the directory containing the policy XML files. By default, the extracted code snippets will be saved to individual `.csx` files in a directory called scripts, located next to the directory containing the policy XML files.
 
@@ -59,7 +59,7 @@ Where <directory-path> is the path to the directory containing the policy XML fi
 To combine C# code snippets back into an APIM policy XML file, run the following command:
 
 ```bash
-apim-policy-transformer -c|--combine <path-to-scripts-folder> <destination-path>(optional)
+apim-policy-utils -c|--combine <path-to-scripts-folder> <destination-path>(optional)
 ```
 
 Where <directory-path> is the path to the directory containing the extracted `.csx` files. By default, the combined policy XML file will be saved in the same directory with the name same as directory name if destination-path is not provided. If destination-path is provided, the combiner will update the policy XML file in the destination path, or create one in the root folder if the original file doesn't exist. The mapping is through the file name.
@@ -116,7 +116,7 @@ For the extract command, the directory structure should look like this:
 ```
 
 ### Contributing
-We welcome contributions to the apim-policy-transformer tool! If you encounter a bug 🐞 or have a feature request 🚀, please open an issue on the GitHub repository. If you would like to contribute code 💻, please fork the repository and submit a pull request with your changes. Please have a look at [CONTRIBUTING.md](./CONTRIBUTING.md)
+We welcome contributions to the apim-policy-utils tool! If you encounter a bug 🐞 or have a feature request 🚀, please open an issue on the GitHub repository. If you would like to contribute code 💻, please fork the repository and submit a pull request with your changes. Please have a look at [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ### License
 This project is licensed under the MIT License. 📝

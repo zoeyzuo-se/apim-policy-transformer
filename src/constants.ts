@@ -2,15 +2,15 @@ import { getVersion } from "./getVersion"
 export const separator = "// ================== <Generated Separator. Please don't edit this line> =================="
 
 export const cliHelp = `
-👋 Welcome to apim-policy-transformer!
+👋 Welcome to apim-policy-utils!
 
 ✅ Version: ${getVersion()}
 
-✅ Usage: apim-policy-transformer <command> <directory path>
+✅ Usage: apim-policy-utils <command> <directory path>
 
 👉 Examples:
-    $ apim-policy-transformer -c|--combine path/to/policies
-    $ apim-policy-transformer -e|--extract path/to/scripts path/to/policies(optional)
+    $ apim-policy-utils -c|--combine path/to/policies
+    $ apim-policy-utils -e|--extract path/to/scripts path/to/policies(optional)
 
 🔎 Here's what each command does:
     📥 extract: Extracts inline policies and policy sets from XML files in a directory and generates .csx files for each policy.
