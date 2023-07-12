@@ -1,19 +1,19 @@
-# Contributing to apim-policy-transformer
+# Contributing to apim-policy-utils
 
-👍🎉 First off, thank you for considering contributing to apim-policy-transformer! 🎉👍
+👍🎉 First off, thank you for considering contributing to apim-policy-utils! 🎉👍
 
 We welcome contributions to this tool in any form, whether it be bug reports, feature requests, documentation improvements, or code contributions. Please take a moment to review this document in order to make the contribution process as smooth as possible.
 
 ## How to Contribute
 ### Contributing Code
-If you would like to contribute code to apim-policy-transformer, please follow these steps:
+If you would like to contribute code to apim-policy-utils, please follow these steps:
 
 - Fork the repository
 - Clone your forked repository locally
 - Install the dependencies using `yarn install`
 - Make changes to the code
 - Build the code in the root directory using `yarn build`
-- Run the code using `yarn start -e|--extract <absolute/path/to/policy/folder>` or `yarn start -c|--combine <absolute/path/to/scripts/folder>`
+- Run the code using `yarn start -e|--extract <path/to/policy/dir>` or `yarn start -c|--combine <path/to/scripts/dir>` or `yarn start -c|--combine <path/to/scripts/dir> <destination/dir>`
 - Debug the code in VSCode using debugger.
     - 🛠️ Open the debugger on the left pane
     - 🐛 Choose "Debug node script"
@@ -31,4 +31,4 @@ When creating your pull request, please include:
 - Any relevant use cases or examples of where these changes would be useful
 
 License
-By contributing to apim-policy-transformer, you agree that your contributions will be licensed under the MIT License.
+By contributing to apim-policy-utils, you agree that your contributions will be licensed under the MIT License.

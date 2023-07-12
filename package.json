@@ -1,7 +1,7 @@
 {
-  "name": "apim-policy-transformer",
-  "version": "1.0.1",
-  "description": "An Azure API Management policy XML file transformer",
+  "name": "apim-policy-utils",
+  "version": "0.0.1",
+  "description": "An XML file scripts maniputaling and debugging tool targeting to help working with Azure APIM Policy files in xml format.",
   "main": "bin/index.js",
   "bin": "bin/index.js",
   "types": "src/index.ts",
@@ -21,7 +21,7 @@
   ],
   "author": "Zoey Zuo",
   "repository": {
-    "url": "https://github.com/zoeyzuo-se/apim-policy-transformer"
+    "url": "https://github.com/zoeyzuo-se/apim-policy-utils"
   },
   "license": "MIT",
   "devDependencies": {
